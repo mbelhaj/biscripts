@@ -8,5 +8,3 @@ create user 'itvpmp'@'%' identified by 'xxxx';
 grant all on itvpmp.* to 'itvpmp'@'%';
 grant SUPER, SELECT, EXECUTE on *.* to 'itvpmp'@'%';
 flush privilges;
-flush privilges;
-
