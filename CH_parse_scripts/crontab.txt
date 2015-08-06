@@ -1,0 +1,26 @@
+0 * * * * /home/upcadmin/bin/rsync_logs.sh &>/dev/null
+#05 7 * * * /home/upcadmin/bin/rsync_logs_node6.sh &>/dev/null
+30 7 * * * /home/upcadmin/bin/parse_cmdc.sh &>/home/upcadmin/bin/cmdcCron.log
+#00 8 * * * /home/upcadmin/bin/parse_cmdc_node6.sh &>/home/upcadmin/bin/cmdc6Cron.log
+30 6 * * * /home/upcadmin/bin/parse_ps.sh &>/dev/null
+25 7 * * * /home/upcadmin/bin/parse_ps_stats.sh &>/dev/null
+30 7 * * * /home/upcadmin/bin/parse_psrequest.sh &>/dev/null
+20 3 * * * /home/upcadmin/bin/parse_ams.sh &>/home/upcadmin/bin/amsCron.log
+15 8 * * * /home/upcadmin/bin/parse_tms_on_demand.sh &>/home/upcadmin/bin/tmsODM.log
+30 8 * * * /home/upcadmin/bin/parse_tms_tmm.sh &>/home/upcadmin/bin/tmsTMM.log
+40 8 * * * /home/upcadmin/bin/parse_vlm.sh &>/dev/null
+50 8 * * * /home/upcadmin/bin/parse_cmdcstats.sh &>/home/upcadmin/bin/cmdcStat.log
+#20 8 * * * /home/upcadmin/bin/parse_cmdcstats_node6.sh &>/home/upcadmin/bin/cmdc6Stat.log
+40 6 * * * /home/upcadmin/bin/parse_reng.sh &>/home/upcadmin/bin/rengCron.log
+35 9 * * * /home/upcadmin/bin/transfer_hrz_files.sh &>/dev/null
+30 5 * * * /home/upcadmin/bin/parse_wsp.sh &>/home/upcadmin/bin/wspCron.log
+10 3 * * * /home/upcadmin/bin/tools/gzipauthrawlog.sh &>/home/upcadmin/bin/tools/gzipauthrawlog.log
+05 3 * * * for node in `cat /etc/hosts | grep auth | awk -F' ' '{print $3}'`;do nohup bash /home/upcadmin/bin/parse_sgw_requests.sh $node & done 
+2 7,11,19 * * * /home/upcadmin/bin/psstats.sh
+* * * * * /home/upcadmin/bin/auth_counter.sh &>/dev/null
+* * * * * /home/upcadmin/scripts/ccm_logs_graphite_zabbix.sh >/dev/null 2>&1
+#The following line is to add sgw_errors parsing script to run every day @ 3am
+05 3 * * * for node in `cat /etc/hosts | grep auth | awk -F' ' '{print $3}'`;do nohup bash /home/upcadmin/bin/parse_sgw_errors.sh $node & done
+
+#added by Danut
+*/3 * * * * /usr/bin/flock -x -w 180 /home/upcadmin/ch-vlm/.rsync_current_vlm_pps_log.lock -c "/home/upcadmin/ch-vlm/rsync_current_vlm_pps_log.sh 2>&1 >/dev/null"

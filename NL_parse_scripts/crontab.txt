@@ -1,0 +1,30 @@
+0 * * * * /home/upcadmin/bin/rsync_logs.sh &>/dev/null
+#30 7 * * * /home/upcadmin/bin/parse_cmdc.sh &>/home/upcadmin/bin/cmdcCron.log
+30 4 * * * /home/upcadmin/bin/parse_cmdc.sh &>/home/upcadmin/bin/cmdcCron.log
+30 6 * * * /home/upcadmin/bin/parse_ps.sh &>/dev/null
+25 7 * * * /home/upcadmin/bin/parse_ps_stats.sh &>/dev/null
+20 3 * * * /home/upcadmin/bin/parse_ams.sh &>/home/upcadmin/bin/amsCron.log
+15 8 * * * /home/upcadmin/bin/parse_tms_on_demand.sh &>/home/upcadmin/bin/tmsODM.log
+30 8 * * * /home/upcadmin/bin/parse_tms_tmm.sh &>/home/upcadmin/bin/tmsTMM.log
+40 8 * * * /home/upcadmin/bin/parse_vlm.sh &>/dev/null
+50 8 * * * /home/upcadmin/bin/parse_cmdcstats.sh &>/home/upcadmin/bin/cmdcStat.log
+40 6 * * * /home/upcadmin/bin/parse_reng.sh &>/home/upcadmin/bin/rengCron.log
+35 10 * * * /home/upcadmin/bin/transfer_hrz_files.sh &>/dev/null
+30 5 * * * /home/upcadmin/bin/parse_wsp.sh &>/home/upcadmin/bin/wspCron.log
+10 3 * * * /home/upcadmin/bin/tools/gzipauthrawlog.sh &>/home/upcadmin/bin/tools/gzipauthrawlog.log
+05 3 * * * for node in `cat /etc/hosts | grep auth | awk -F' ' '{print $3}'`;do nohup bash /home/upcadmin/bin/parse_sgw_requests.sh $node & done 
+* * * * * /home/upcadmin/bin/auth_counter.sh >>/home/upcadmin/bin/auth_counter.log
+30 5 * * * /home/upcadmin/bin/parse_wsp.sh &>/dev/null
+10 7,19 * * * /home/upcadmin/bin/psstats.sh
+*/5 * * * * /home/upcadmin/scripts/collect-netstat.sh
+* * * * * /home/upcadmin/scripts/ccm_logs_graphite_zabbix.sh >>/dev/null 2>&1
+* * * * * ssh 172.27.64.150 -q "/home/upcadmin/scripts/test_reng_connectivity.sh" >> /tmp/reng_cmdc3_connectivity.csv
+* * * * * ssh 172.27.64.152 -q "/home/upcadmin/scripts/test_reng_connectivity.sh" >> /tmp/reng_cmdc5_connectivity.csv
+#* * * * * /usr/bin/perl /home/upcadmin/bin/monitor_cmdc_queues.pl >>/dev/null 2>&1
+#The following line is for VLM statistics ---mbelhaj
+0 9 * * * /home/upcadmin/mehdi/vlm/vlm_stats.sh &>/dev/null
+#The following line is to add sgw_errors parsing script to run every day @ 3am
+05 3 * * * for node in `cat /etc/hosts | grep auth | awk -F' ' '{print $3}'`;do nohup bash /home/upcadmin/bin/parse_sgw_errors.sh $node & done
+
+#added by Danut
+*/3 * * * * /usr/bin/flock -x -w 180 /home/upcadmin/nl-vlm/.rsync_current_vlm_pps_log.lock -c "/home/upcadmin/nl-vlm/rsync_current_vlm_pps_log.sh 2>&1 >/dev/null"

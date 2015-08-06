@@ -1,0 +1,24 @@
+0 * * * * /home/upcadmin/bin/rsync_logs.sh &>/dev/null
+10 7 * * * /home/upcadmin/bin/parse_cmdc.sh &>/dev/null
+5 5 * * * /home/upcadmin/bin/parse_ams.sh &>/dev/null
+10 4 * * * /home/upcadmin/bin/parse_ps_fr2.sh &>/dev/null
+30 6 * * * /home/upcadmin/bin/parse_ps_stats.sh &>/dev/null
+45 6 * * * /home/upcadmin/bin/parse_psreplay.sh &>/dev/null
+15 3 * * * /home/upcadmin/bin/parse_cmdcstats.sh &>/dev/null
+15 5 * * * /home/upcadmin/bin/parse_tms_ondemand.sh &>/dev/null
+45 5 * * * /home/upcadmin/bin/parse_tms_tmm.sh &>/dev/null
+5 9 * * * /home/upcadmin/bin/transfer_hrz_files.sh &>/dev/null
+10 8 * * * /home/upcadmin/bin/parse_reng.sh &>/dev/null
+30 5 * * * /home/upcadmin/bin/parse_wsp.sh &>/dev/null
+05 3 * * * for node in `cat /etc/hosts | grep auth | awk -F' ' '{print $2}'`;do nohup bash /home/upcadmin/bin/parse_sgw_requests.sh $node & done
+2 4,7,19 * * * /home/upcadmin/bin/psstats.sh
+* * * * * /home/upcadmin/bin/auth_counter.sh &>/dev/null
+
+#Added by Pavlos - Updated by Amine 21 Oct 2014
+* * * * * /home/upcadmin/scripts/ccm_logs_graphite_zabbix.sh >/dev/null 2>&1
+
+#added by Danut - rsync cmdc logs as closest possible
+*/5 * * * * /home/upcadmin/bin/rsync_current_cmdc_logs.sh &>/dev/null
+20 23 * * * /bin/find /big/elk/current_cmdc_logs -type f -name "cmdc.log*gz" -mtime +1 -exec rm -f {} \;
+#The following line is to add sgw_errors parsing script to run every day @ 3am
+05 3 * * * for node in `cat /etc/hosts | grep auth | awk -F' ' '{print $3}'`;do nohup bash /home/upcadmin/bin/parse_sgw_errors.sh $node & done
