@@ -35,7 +35,7 @@ CREATE TABLE `cmdc_agg` (
   `traxis_resp_time` float DEFAULT NULL,
   `reng_resp_time` float DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=6200 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=17654 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -62,7 +62,7 @@ CREATE TABLE `mehdi_agg` (
   `b4000t10000` float DEFAULT NULL,
   `gt10000` float DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=21274 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=64933 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -75,14 +75,14 @@ DROP TABLE IF EXISTS `tb_ams_requests`;
 CREATE TABLE `tb_ams_requests` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_country` tinyint(3) DEFAULT NULL,
-  `req_date` datetime DEFAULT NULL,
-  `req_time` datetime DEFAULT NULL,
+  `req_date` date DEFAULT NULL,
+  `req_time` time DEFAULT NULL,
   `thread_id` varchar(60) DEFAULT NULL,
   `ams_node` tinyint(3) DEFAULT NULL,
   `avg_response_time` int(11) DEFAULT NULL,
   `total_request` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=624118 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=957045 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -114,7 +114,7 @@ CREATE TABLE `tb_cmdc_requests` (
   KEY `id_country_idx` (`id_country`),
   KEY `ts_idx` (`ts`),
   KEY `top5index` (`ts`,`cmdc_node`)
-) ENGINE=MyISAM AUTO_INCREMENT=5985944 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=9120103 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -132,7 +132,7 @@ CREATE TABLE `tb_cmdc_stats` (
   `id_country` tinyint(3) DEFAULT NULL,
   `node` tinyint(3) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4163 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=6244 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -180,7 +180,7 @@ CREATE TABLE `tb_ps_households` (
   `value` int(11) DEFAULT NULL,
   `id_country` tinyint(3) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=965 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=1305 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -193,8 +193,8 @@ DROP TABLE IF EXISTS `tb_ps_replay`;
 CREATE TABLE `tb_ps_replay` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_country` tinyint(3) DEFAULT NULL,
-  `req_date` datetime DEFAULT NULL,
-  `req_time` datetime DEFAULT NULL,
+  `req_date` date DEFAULT NULL,
+  `req_time` time DEFAULT NULL,
   `module_name` varchar(50) DEFAULT NULL,
   `api_method` varchar(50) DEFAULT NULL,
   `ps_node` tinyint(3) DEFAULT NULL,
@@ -202,7 +202,7 @@ CREATE TABLE `tb_ps_replay` (
   `total_request` int(11) DEFAULT NULL,
   `total_failure` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=836947 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=1294659 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -222,7 +222,7 @@ CREATE TABLE `tb_ps_requests` (
   `sucess_count` int(11) DEFAULT NULL,
   `failed_count` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=102514 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=152506 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -247,7 +247,7 @@ CREATE TABLE `tb_reng_ingest` (
   `itemreferencinnonexistenprograinformations` smallint(6) DEFAULT NULL,
   `invaliclassificatioscheme` smallint(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=98 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=134 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -273,7 +273,7 @@ CREATE TABLE `tb_reng_requests` (
   `resp_time` int(11) DEFAULT NULL,
   `thread_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=15797254 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=23591397 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -300,7 +300,7 @@ CREATE TABLE `tb_resptimes_agg` (
   `b4000t10000` int(11) DEFAULT NULL,
   `gt10000` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=98502 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=149564 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -346,7 +346,7 @@ CREATE TABLE `tb_sgw_errors` (
   `message` varchar(50) DEFAULT NULL,
   `total_count` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=135723 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=206892 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -365,7 +365,7 @@ CREATE TABLE `tb_sgw_requests` (
   `total_count` int(11) DEFAULT NULL,
   `avg_rt` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -386,7 +386,7 @@ CREATE TABLE `tb_tms_ondem` (
   `avg_response_time` int(11) DEFAULT NULL,
   `total_request` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=27388485 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=41904664 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -405,7 +405,7 @@ CREATE TABLE `tb_tms_tmm` (
   `tms_node` tinyint(3) DEFAULT NULL,
   `id_country` tinyint(3) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1315368 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=1927183 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -418,8 +418,8 @@ DROP TABLE IF EXISTS `tb_vlm_requests`;
 CREATE TABLE `tb_vlm_requests` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_country` tinyint(3) DEFAULT NULL,
-  `datets` datetime DEFAULT NULL,
-  `timekey` datetime DEFAULT NULL,
+  `datets` date DEFAULT NULL,
+  `timekey` time DEFAULT NULL,
   `status_code` int(11) DEFAULT NULL,
   `http_method` varchar(10) DEFAULT NULL,
   `avg_resp_time` int(11) DEFAULT NULL,
@@ -427,7 +427,7 @@ CREATE TABLE `tb_vlm_requests` (
   `vlm_node` tinyint(3) DEFAULT NULL,
   `mode` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=117052 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=178007 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -447,7 +447,7 @@ CREATE TABLE `tb_wsp_requests` (
   `avg_response_time` int(11) DEFAULT NULL,
   `total_request` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=4612 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=6937 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -459,4 +459,4 @@ CREATE TABLE `tb_wsp_requests` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-08-01 11:49:40
+-- Dump completed on 2015-08-07 10:20:22
