@@ -1,7 +1,7 @@
 ###############################################################################################
 # Name: InsertRawBulkData.pl
 # Version: 1.1
-# Author: aaaaaaaa 
+# Author: Maximo F. Alves
 # Purpose: inserts large raw data amounts 
 # Description: 
 # - read config file(abort if not found or not consistent)   
@@ -16,6 +16,11 @@
 # Config file name: InsertRawBulkData.cfg
 # - each line holds one table type
 # - line format:Root table name;path to raw files 
+# 
+# LATEST IMPROVEMENTS:
+# July 2014: VLM insert by Simon
+# July 2014: RENG threads by Carlos 
+# 
 # 
 ###############################################################################################
 
@@ -209,9 +214,9 @@ sub execute_mainteananca_task {
 	}elsif($table=~/sgw_requests/){
 		$logger->debug_message("... Insert data into agregated table tb_sgw_requests");
 		$sql = 'insert into itvpmp.tb_sgw_requests (id_country, ts, component, node, total_count, avg_rt)
-        select $id_country, date_format(t.ts,"%Y-%m-%d %H:%i:00") as datets,
+        select ' . $id_country . ', date_format(t.ts,"%Y-%m-%d %H:%i:00") as datets,
         t.component, t.sgwNode, sum(t.request_count), avg(t.avg_rt)
-        from $tablename t
+        from itvrawdata.' . "$tablename" . ' t
         group by  hour(t.ts),minute(t.ts), t.component, t.sgwNode';
 		$sth = PMP->query_data($sql);
 	}elsif($table=~/sgw_errors/){
@@ -226,7 +231,7 @@ sub execute_mainteananca_task {
 			
 	}elsif($table=~/reng_/){	
 		$logger->debug_message("... Insert data into agregated table tb_reng_requests");
-        $sql = 'insert into itvpmp.tb_reng_requests (id_country,ts,api_method,source_ip,http_method,http_response_code,client_type,reng_node,d4a_customer_flag,orion_customer_flag,total_request,resp_time,thread_id) 
+        $sql = 'insert into itvpmp.tb_reng_requests (id_country,ts,api_method,source_ip,http_method,http_response_code,client_type,reng_node,d4a_customer_flag,orion_customer_flag,total_request,resp_time,thread_id,subid) 
         select ' . $id_country . ',date_format(t.ts,"%Y-%m-%d %H:%i:00") as datets,
         api_method,
         source_ip,
@@ -238,7 +243,8 @@ sub execute_mainteananca_task {
         orion_customer_flag,
         count(api_method) as total_request,
         avg(resp_time) as avg_resp_time, 		
-        thread_id' . "
+        thread_id' . ",
+        subid
         from $tablename t 
         group by hour(t.ts),minute(t.ts), api_method, source_ip, http_method, http_response_code, client_type,reng_node, d4a_customer_flag, orion_customer_flag";	
 		$sth = PMP->query_data($sql);
@@ -393,21 +399,20 @@ sub execute_mainteananca_task {
 		
 	}elsif($table=~/ams/){	
 		$logger->debug_message("... Insert data into agregated table tb_ams_requests");
-        $sql = "insert into itvpmp.tb_ams_requests (id_country,req_date,req_time,thread_id,ams_node,avg_response_time,total_request) 
-        select $id_country , date(t.ts) as datets,
-        sec_to_time(time_to_sec(t.ts)- time_to_sec(t.ts)%(15*60)) AS timekey,
+        $sql = 'insert into itvpmp.tb_ams_requests(id_country,ts,thread_id,ams_node,avg_response_time,total_request) 
+        select ' . $id_country . ', date_format(t.ts,"%Y-%m-%d %H:%i:00") as datets,
 		thread_id,
         ams_node,
         avg(t.response_time) as avg_ams,        
-        count(thread_id) as total_request 
-        from $tablename t 
-        group by timekey,thread_id,ams_node";	
+        count(thread_id) as total_request
+        ' . " from $tablename t 
+        group by  hour(t.ts),minute(t.ts),thread_id,ams_node";	
 		$sth = PMP->query_data($sql);
 		
 	}elsif($table=~/wsp/){
 		$logger->debug_message("... Insert data into agregated table tb_wsp_requests");
         $sql = "insert into itvpmp.tb_wsp_requests (id_country,req_date,req_time,thread_id,ams_node,avg_response_time,total_request)
-        select $id_country , date(t.ts) as datets,
+        select  ' . $id_country . ' , date(t.ts) as datets,
         sec_to_time(time_to_sec(t.ts)- time_to_sec(t.ts)%(15*60)) AS timekey,
                 thread_id,
         ams_node,
@@ -418,12 +423,14 @@ sub execute_mainteananca_task {
                 $sth = PMP->query_data($sql);
          }elsif($table=~/vlm/){
                 $logger->debug_message("... Insert data into agregated table tb_vlm_requests");
-        $sql = "insert into itvpmp.tb_vlm_requests(id_country,datets,timekey,status_code,http_method,avg_resp_time,total_request,vlm_node,mode) select $id_country,
-	date(t.ti) as datets,sec_to_time(time_to_sec(t.ti)- time_to_sec (t.ti)%(1*60)) AS timekey,status_code,http_method, avg(t.tdiff) as avg_resp_time,count(t.id) 
-	as total_request ,vlm_node,case when t.url like   '%lastPlayDateTime%' and t.http_method = 'PUT' then 'Purchase/Play' when t.url like '%lastPlayPosition%' 
-		and t.http_method = 'PUT' then 'Stop Play' when t.url not like '%last%' and t.http_method = 'PUT' then 'Authorisation' 
-                when t.http_method = 'GET' and t.url like '%crid%' then 'My Purchased' when t.http_method = 'GET' and t.url like '%-creationDate%' then 'My Library' 
-		else 'Main Menu' end as mode from itvrawdata.$tablename t  group by timekey,http_method,status_code";
+        $sql = 'insert into itvpmp.tb_vlm_requests(id_country,ts,status_code,http_method,avg_resp_time,total_request,vlm_node,mode) 
+        select   ' . $id_country . ' , date_format(t.ti,"%Y-%m-%d %H:%i:00") as datets,
+         status_code,http_method, avg(t.tdiff) as avg_resp_time,count(t.id) as total_request ,vlm_node,
+         case when t.url like "%lastPlayDateTime%" and t.http_method = "PUT" then "Purchase/Play" when t.url like "%lastPlayPosition%"
+                and t.http_method = "PUT" then "Stop Play" when t.url not like "%last%" and t.http_method = "PUT" then "Authorisation"
+                when t.http_method = "GET" and t.url like "%crid%" then "My Purchased" when t.http_method = "GET" and t.url like "%-creationDate%" then "My Library"
+                else "Main Menu" end as mode
+         from itvrawdata.' . "$tablename  t  group by hour(t.ti),minute(t.ti),http_method,status_code";
                 $sth = PMP->query_data($sql);
 
 	}else{
@@ -503,7 +510,7 @@ sub parse_and_insert{
     }elsif($table=~/reng_/){
 		$file =~ /\d{8}-RENGExportNode(\d+)/;
 		$node = $1;	
-		$insert_table = "LOAD DATA INFILE '$dir/$file' INTO TABLE $finaltablename " . 'FIELDS TERMINATED BY "," LINES TERMINATED BY "\n" (@ip, @ts, @httpm, @httprc, @api, @dflag, @oflag, @ctype, @rt, @tid) SET source_ip = @ip, ts = str_to_date(@ts,' . '"%d/%M/%Y:%H:%i:%s"), http_method = @httpm, http_response_code = @httprc, api_method = @api, d4a_customer_flag = @dflag, orion_customer_flag = @oflag, client_type = @ctype,resp_time = @rt,thread_id = @tid,  reng_node = ' . $node;
+		$insert_table = "LOAD DATA INFILE '$dir/$file' INTO TABLE $finaltablename " . 'FIELDS TERMINATED BY "," LINES TERMINATED BY "\n" (@ip, @ts, @httpm, @httprc, @api, @dflag, @oflag,@ctype, @rt, @tid, @subid) SET source_ip = @ip, ts = str_to_date(@ts,' . '"%d/%M/%Y:%H:%i:%s"), http_method = @httpm, http_response_code = @httprc, api_method = @api, d4a_customer_flag = @dflag, orion_customer_flag = @oflag, client_type = @ctype,resp_time = @rt,thread_id = @tid, subid = nullif(@subid," "), reng_node = ' . $node;
 		$logger->debug_message("... Insert data into $finaltablename");
 		$sth = PMP->query_data($insert_table);		
     	# source IP from request, date, HTTP method, http resp code, api method, 1 is D4A customer, 1 if Orion customer, client type
@@ -687,6 +694,7 @@ sub prepare_table{
 	   reng_node tinyint(3) unsigned NOT NULL,
 	   resp_time smallint(5) unsigned,
 	   thread_id smallint(5) unsigned,
+       subid varchar(12) NULL,
        PRIMARY KEY (id)
        ) ENGINE=MyISAM DEFAULT CHARSET=utf8";
 		$create_table=~ s/TABLENAME/$finaltablename/;
