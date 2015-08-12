@@ -361,16 +361,15 @@ sub execute_mainteananca_task {
 	
 	}elsif($table=~/tmsondem/){	
 		$logger->debug_message("... Insert data into agregated table tb_tms_ondem");
-        $sql = "insert into itvpmp.tb_tms_ondem (id_country,req_date,req_time,module_name,api_method,tms_node,avg_response_time,total_request) 
-        select $id_country , date(t.ts) as datets,
-        sec_to_time(time_to_sec(t.ts)- time_to_sec(t.ts)%(1*60)) AS timekey,
+        $sql = 'insert into itvpmp.tb_tms_ondem (id_country,ts,module_name,api_method,tms_node,avg_response_time,total_request) 
+        select  ' . $id_country . ', date_format(t.ts,"%Y-%m-%d %H:%i:00") as datets,
 		module_name,
         api_method,
         tms_node,
         avg(t.response_time) as avg_tms,        
-        count(api_method) as total_request 
+        count(api_method) as total_request' . " 
         from $tablename t 
-        group by timekey,module_name, api_method, tms_node";	
+        group by hour(t.ts),minute(t.ts),module_name, api_method, tms_node";	
 		$sth = PMP->query_data($sql);
 		
 	}elsif($table=~/pshh/){	
