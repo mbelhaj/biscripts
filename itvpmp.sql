@@ -16,6 +16,23 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `RengTraxis`
+--
+
+DROP TABLE IF EXISTS `RengTraxis`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `RengTraxis` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `subscriberId` varchar(20) DEFAULT NULL,
+  `ts` varchar(30) DEFAULT NULL,
+  `ts_load_customer` varchar(30) DEFAULT NULL,
+  `api` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=661661 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `cmdc_agg`
 --
 
@@ -35,7 +52,7 @@ CREATE TABLE `cmdc_agg` (
   `traxis_resp_time` float DEFAULT NULL,
   `reng_resp_time` float DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=24778 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=26497 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -62,7 +79,7 @@ CREATE TABLE `mehdi_agg` (
   `b4000t10000` float DEFAULT NULL,
   `gt10000` float DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=90586 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=97053 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -192,6 +209,27 @@ DROP TABLE IF EXISTS `tb_ps_replay`;
 CREATE TABLE `tb_ps_replay` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_country` tinyint(3) DEFAULT NULL,
+  `ts` datetime DEFAULT NULL,
+  `module_name` varchar(50) DEFAULT NULL,
+  `api_method` varchar(50) DEFAULT NULL,
+  `ps_node` tinyint(3) DEFAULT NULL,
+  `avg_response_time` mediumint(9) DEFAULT NULL,
+  `total_request` int(11) DEFAULT NULL,
+  `total_failure` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1682008 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tb_ps_replay_orig`
+--
+
+DROP TABLE IF EXISTS `tb_ps_replay_orig`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tb_ps_replay_orig` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_country` tinyint(3) DEFAULT NULL,
   `req_date` date DEFAULT NULL,
   `req_time` time DEFAULT NULL,
   `module_name` varchar(50) DEFAULT NULL,
@@ -246,7 +284,7 @@ CREATE TABLE `tb_reng_ingest` (
   `itemreferencinnonexistenprograinformations` smallint(6) DEFAULT NULL,
   `invaliclassificatioscheme` smallint(6) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=165 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=2365920 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -365,7 +403,26 @@ CREATE TABLE `tb_sgw_requests` (
   `total_count` int(11) DEFAULT NULL,
   `avg_rt` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=97 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=98 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tb_sgw_requests_copy`
+--
+
+DROP TABLE IF EXISTS `tb_sgw_requests_copy`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tb_sgw_requests_copy` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_country` tinyint(3) DEFAULT NULL,
+  `ts` datetime DEFAULT NULL,
+  `component` varchar(5) DEFAULT NULL,
+  `node` int(11) DEFAULT NULL,
+  `total_count` int(11) DEFAULT NULL,
+  `avg_rt` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -458,4 +515,4 @@ CREATE TABLE `tb_wsp_requests` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-08-11 14:08:43
+-- Dump completed on 2015-08-12 10:17:35

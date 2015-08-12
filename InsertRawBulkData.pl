@@ -346,17 +346,16 @@ sub execute_mainteananca_task {
 	}elsif($table=~/^psrequest/){
 #24 April 2014 - Maximo	
 		$logger->debug_message("... Insert into itvpmp.tb_ps_replay");
-		$sql = "insert into itvpmp.tb_ps_replay (id_country,req_date,req_time,module_name,api_method,ps_node,avg_response_time,total_request,total_failure)
-	        select $id_country, date(t.ts) as datets,
-	        sec_to_time(time_to_sec(t.ts)- time_to_sec(t.ts)%(1*60)) AS timekey,
+		$sql = 'insert into itvpmp.tb_ps_replay (id_country,ts,module_name,api_method,ps_node,avg_response_time,total_request,total_failure)
+	        select  ' . $id_country . ', date_format(t.ts,"%Y-%m-%d %H:%i:00") as datets,
 	        module,
 	        api,
 	        node,
 	        avg(t.rt) as avg_response_time,
 	        count(t.api) as total_request,
-		count(nullif(t.status,0))  as total_failure
+		count(nullif(t.status,0))  as total_failure' . "
 	        from $tablename t
-	        group by timekey,module, api, node";
+	        group by hour(t.ts),minute(t.ts),module, api, node";
 		$sth = PMP->query_data($sql);
 
 	
@@ -494,7 +493,7 @@ sub parse_and_insert{
 		$file =~ /(\d{4})(\d{2})(\d{2})-SGW(\d+)/;
 		my $aux = "$1-$2-$3";
 		$node = $4;
-		$insert_table = "LOAD DATA INFILE '$dir/$file' INTO TABLE $finaltablename " . 'FIELDS TERMINATED BY ";" OPTIONALLY ENCLOSED BY \'"\' LINES TERMINATED BY "\n" (@id, @h, @m, @s, @rcount, @avg_rt, @component) SET  ts = concat("' . $aux . ' ",@h,":",@m,":",@s), request_count = @rcount, avg_rt=if(length(@avg_rt)=0,NULL,@avg_rt), component=@component, sgwNode = '. $node;
+		$insert_table = "LOAD DATA INFILE '$dir/$file' INTO TABLE $finaltablename " . 'FIELDS TERMINATED BY "," OPTIONALLY ENCLOSED BY \'"\' LINES TERMINATED BY "\n" (@id, @h, @m, @s, @rcount, @avg_rt, @component) SET  ts = concat("' . $aux . ' ",@h,":",@m,":",@s), request_count = @rcount, avg_rt=if(length(@avg_rt)=0,NULL,@avg_rt), component=@component, sgwNode = '. $node;
 		$logger->debug_message("... Insert data into $finaltablename");
                 $sth = PMP->query_data($insert_table);
 			
