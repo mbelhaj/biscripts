@@ -20,7 +20,7 @@
 # LATEST IMPROVEMENTS:
 # July 2014: VLM insert by Simon
 # July 2014: RENG threads by Carlos 
-# 
+# 31 Aug 2015 : CMDC - traxis/TWC/Reng number of requests by Mehdi 
 # 
 ###############################################################################################
 
@@ -127,7 +127,7 @@ sub execute_mainteananca_task {
                 (SUM(IF(t.http_resp_code=404,1,0)) / count(t.cmdc_api)*100) as http404Percentage,
                 (SUM(IF(t.http_resp_code=500,1,0)) / count(t.cmdc_api)*100) as http500Percentage,
                 t.client_type as client_type,
-                cmdc_node, COUNT(t.twc_resp_time),COUNT(t.reng_resp_time),COUNT(t.traxis_resp_time)' . " from $tablename t group by hour(t.ts),minute(t.ts), API_method, client_type, cmdc_node";  
+                cmdc_node, SUM(if(t.twc_resp_time is not null,1,0)),SUM(if(t.reng_resp_time is not null,1,0)),SUM(if(t.traxis_resp_time is not null,1,0))' . " from $tablename t group by hour(t.ts),minute(t.ts), API_method, client_type, cmdc_node";  
 		$sth = PMP->query_data($sql);
 		
 		#Below is inserting aggregated response times over 24 hours.
@@ -431,6 +431,12 @@ sub execute_mainteananca_task {
          from itvrawdata.' . "$tablename  t  group by hour(t.ti),minute(t.ti),http_method,status_code";
                 $sth = PMP->query_data($sql);
 
+         }elsif($table=~/Jmx/){
+                $logger->debug_message("... Insert data into agregated table tb_jmx_stats");
+        $sql = 'insert into itvpmp.tb_jmx_stats(id_country,method,statsval,ts,ams_node) 
+        select   ' . $id_country . ' , method,statsval,date_format(t.ts,"%Y-%m-%d %H:%i:00") as datets,
+         ams_node from itvrawdata.' . "$tablename  t order by hour(t.ts),minute(t.ts)";
+                $sth = PMP->query_data($sql);
 	}else{
 		$logger->debug_message("ERROR: do not know which table to maintain, (table,tablenale) = ($table,$tablename)");
 
@@ -601,6 +607,13 @@ sub parse_and_insert{
 		$file =~ /\d{8}-vlm(\d+)/;
 		$node = $1;	
 		$insert_table = "LOAD DATA INFILE '$dir/$file' INTO TABLE $finaltablename " . 'FIELDS TERMINATED BY ";" LINES TERMINATED BY "\n" (@ti, @tf,@http_method, @subscriber_id, @status_code, @url) SET ti = @ti,tf = @tf, tdiff=timestampdiff(microsecond,@ti,@tf)/1000,http_method = @http_method, subscriber_id = @subscriber_id, status_code = @status_code, url = @url, vlm_node = ' . $node;
+		$logger->debug_message("... Insert data into $finaltablename");
+		$sth = PMP->query_data($insert_table);		
+
+        }elsif($table=~/Jmx/){
+		$file =~ /\d{8}-Jmx(\d+)/;
+		$node = $1;	
+		$insert_table = "LOAD DATA INFILE '$dir/$file' INTO TABLE $finaltablename " . 'FIELDS TERMINATED BY "," LINES TERMINATED BY "\n" (@method, @statsval,@ts) SET method = @method,statsval= @statsval, ts = @ts, ams_node = ' . $node;
 		$logger->debug_message("... Insert data into $finaltablename");
 		$sth = PMP->query_data($insert_table);		
 	}else{
@@ -806,6 +819,18 @@ sub prepare_table{
 	$sth = PMP->query_data($create_table);
 	$logger->debug_message("Creating table $finaltablename");
 
+	}elsif($table =~/Jmx/){
+		$create_table = "CREATE TABLE IF NOT EXISTS TABLENAME (
+       id int(10) unsigned NOT NULL AUTO_INCREMENT,
+       method varchar(20) NOT NULL,
+       statsval int NOT NULL,
+       ts timestamp NOT NULL ,
+       ams_node tinyint(3) unsigned NOT NULL,
+       PRIMARY KEY (id)
+       ) ENGINE=MyISAM DEFAULT CHARSET=utf8";
+	$create_table=~ s/TABLENAME/$finaltablename/;
+	$sth = PMP->query_data($create_table);
+	$logger->debug_message("Creating table $finaltablename");
 	}else{
 		$logger->debug_message("ERROR: do not know which table to create table = $table");
 	}		
